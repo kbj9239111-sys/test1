@@ -1,0 +1,29 @@
+name: Heydealer price fetch
+
+on:
+  schedule:
+    - cron: "0 2 * * *"
+  workflow_dispatch:
+
+jobs:
+  fetch:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Fetch latest prices
+        env:
+          HEYDEALER_API_URL: ${{ secrets.HEYDEALER_API_URL }}
+          HEYDEALER_HEADERS_JSON: ${{ secrets.HEYDEALER_HEADERS_JSON }}
+          HEYDEALER_PARAMS_JSON: ${{ secrets.HEYDEALER_PARAMS_JSON }}
+        run: |
+          python scripts/heydealer_fetch.py \
+            --api-url "$HEYDEALER_API_URL" \
+            --headers-json "${HEYDEALER_HEADERS_JSON:-{}}" \
+            --params-json "${HEYDEALER_PARAMS_JSON:-{}}"
